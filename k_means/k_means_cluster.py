@@ -11,7 +11,8 @@ import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
-import sys
+
+import pandas as pd
 
 
 sys.path.append("/Users/rebecagonzalez/Desktop/DeepLearning/ud120-projects/tools")
@@ -34,7 +35,7 @@ import numpy
 import matplotlib.pyplot as plt
 #from feature_format import featureFormat, targetFeatureSplit
 from sklearn.cluster import KMeans
-
+import operator
 
 
 
@@ -157,7 +158,7 @@ def Draw(pred, features, poi, mark_poi=False, name="image.png", f1_name="feature
 data_dict = pickle.load( open("../final_project/final_project_dataset.pkl", "rb") )
 ### there's an outlier--remove it! 
 data_dict.pop("TOTAL", 0)
-print(data_dict)
+
 
 
 ### the input features to use
@@ -166,8 +167,7 @@ feature_1 = "salary"
 feature_2 = "exercised_stock_options"
 feature_3 = "total_payments"
 poi  = "poi"
-features_list = [poi, feature_1, feature_2, feature_3]
-
+features_list = [poi, feature_1, feature_2]
 
 
 def finance_kmeans(data_dict, features_list):
@@ -175,10 +175,20 @@ def finance_kmeans(data_dict, features_list):
 
     data = featureFormat(data_dict, features_list)
     poi, finance_features = targetFeatureSplit(data)
-
     # plot the first 2 features
     for f in finance_features:
         plt.scatter(f[0], f[1])
+
+    import pandas as pd
+
+    df = pd.DataFrame(data_dict)
+    df.loc['exercised_stock_options', :] = pd.to_numeric(df.loc['exercised_stock_options', :], errors='coerce')
+    print(df.loc['exercised_stock_options', :].max(skipna=True))
+    print(df.loc['exercised_stock_options', :].min(skipna=True))
+
+    df.loc['salary', :] = pd.to_numeric(df.loc['salary', :], errors='coerce')
+    print(df.loc['salary', :].max(skipna=True))
+    print(df.loc['salary', :].min(skipna=True))
 
     ### cluster here; create predictions of the cluster labels
     ### for the data and store them to a list called pred
